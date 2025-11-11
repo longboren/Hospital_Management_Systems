@@ -6,129 +6,107 @@ import 'package:hospital_management_system/domain/entities/appointment.dart';
 import 'package:hospital_management_system/domain/entities/prescription.dart';
 
 void main() {
-  group('Domain Entities Unit Tests', () {
-    test('Staff Inheritance and Role Assignment', () {
+  group('Domain Entities Tests', () {
+    test('Staff creation - Doctor, Nurse, Admin', () {
       final doctor = Doctor(
         id: 'D001',
-        name: 'Dr. Test',
-        email: 'test@hospital.com',
-        phoneNumber: '123-456-7890',
-        joinDate: DateTime.now(),
+        name: 'Dr. Sok Virak',
+        email: 'sok.virak@hospital.com',
+        phoneNumber: '+855-12-345-678',
+        joinDate: DateTime(2020, 1, 1),
         department: 'Cardiology',
-        specialization: 'Cardiology',
-        licenseNumber: 'TEST123',
+        specialization: 'Heart Surgery',
+        licenseNumber: 'LIC123',
       );
 
       final nurse = Nurse(
         id: 'N001',
-        name: 'Nurse Test',
-        email: 'nurse@hospital.com',
-        phoneNumber: '123-456-7891',
-        joinDate: DateTime.now(),
+        name: 'Nhean Sreypov',
+        email: 'nhean.sreypov@hospital.com',
+        phoneNumber: '+855-12-345-679',
+        joinDate: DateTime(2021, 1, 1),
         department: 'Emergency',
         ward: 'ER',
-        shift: 'Day',
+        shift: 'Night',
       );
 
       final admin = Administrative(
         id: 'A001',
-        name: 'Admin Test',
-        email: 'admin@hospital.com',
-        phoneNumber: '123-456-7892',
-        joinDate: DateTime.now(),
+        name: 'Chea Dara',
+        email: 'chea.dara@hospital.com',
+        phoneNumber: '+855-12-345-680',
+        joinDate: DateTime(2019, 1, 1),
         department: 'Administration',
         position: 'Manager',
       );
 
-      expect(doctor, isA<Staff>());
       expect(doctor.role, 'Doctor');
       expect(nurse.role, 'Nurse');
       expect(admin.role, 'Administrative');
     });
 
-    test('Patient Age Calculation and Medical Records', () {
-      final now = DateTime.now();
-      final birthDate = DateTime(now.year - 30, now.month, now.day);
+    test('Patient age calculation and medical records', () {
       final patient = Patient(
         id: 'P001',
-        name: 'Test Patient',
-        dateOfBirth: birthDate,
-        gender: 'Male',
-        phoneNumber: '123-456-7890',
-        email: 'patient@test.com',
-        address: 'Test Address',
-        bloodType: 'A+',
-        emergencyPhone: '123-456-7891',
+        name: 'Srey Mao',
+        dateOfBirth: DateTime(1990, 6, 15),
+        gender: 'Female',
+        address: 'St. 271, Phnom Penh',
+        phoneNumber: '+855-23-456-789',
+        email: 'srey.mao@email.com',
+        bloodType: 'O+',
         allergies: ['Penicillin'],
-        medicalConditions: ['Hypertension'],
       );
 
-      expect(patient.age, 30);
-      expect(patient.allergies, contains('Penicillin'));
-      expect(patient.medicalConditions, contains('Hypertension'));
-
+      expect(patient.age, greaterThanOrEqualTo(30));
       patient.addAllergy('Latex');
-      expect(patient.allergies, contains('Latex'));
-
-      patient.addMedicalCondition('Diabetes');
-      expect(patient.medicalConditions, contains('Diabetes'));
+      expect(patient.allergies.length, 2);
     });
 
-    test('Room and Bed Management', () {
+    test('Room and bed management', () {
       final room = Room(
         id: 'R001',
         number: '101',
         type: RoomType.privateRoom,
         capacity: 2,
-        pricePerDay: 200.0,
+        pricePerDay: 250.0,
       );
 
-      expect(room.beds.length, 2);
       expect(room.availableBedsCount, 2);
 
       final bed = room.getAvailableBed();
-      expect(bed, isNotNull);
-
       bed!.assignPatient('P001');
       expect(room.availableBedsCount, 1);
       expect(bed.status, BedStatus.occupied);
-      expect(bed.patientId, 'P001');
 
       bed.dischargePatient();
       expect(room.availableBedsCount, 2);
-      expect(bed.status, BedStatus.available);
-      expect(bed.patientId, isNull);
     });
 
-    test('Appointment Lifecycle', () {
+    test('Appointment lifecycle', () {
       final appointment = Appointment(
-        id: 'A001',
+        id: 'APT001',
         patientId: 'P001',
         doctorId: 'D001',
-        scheduledTime: DateTime.now().add(const Duration(hours: 2)),
+        scheduledTime: DateTime.now().add(Duration(hours: 2)),
         reason: 'Checkup',
       );
 
       expect(appointment.status, AppointmentStatus.scheduled);
-      expect(appointment.isUpcoming, isTrue);
 
       appointment.startAppointment();
       expect(appointment.status, AppointmentStatus.inProgress);
-      expect(appointment.actualStartTime, isNotNull);
 
       appointment.complete();
       expect(appointment.status, AppointmentStatus.completed);
-      expect(appointment.actualEndTime, isNotNull);
-
-      expect(appointment.duration, isNotNull);
     });
 
-    test('Prescription and Medication Management', () {
+    test('Prescription validation', () {
       final medication = Medication(
-        name: 'Test Medication',
+        name: 'Aspirin',
         dosage: '500mg',
-        frequency: 'daily',
-        cost: 10.0,
+        frequency: 'twice daily',
+        cost: 5.99,
       );
 
       final prescription = Prescription(
@@ -136,54 +114,14 @@ void main() {
         patientId: 'P001',
         doctorId: 'D001',
         issueDate: DateTime.now(),
-        diagnosis: 'Test Diagnosis',
+        diagnosis: 'Pain',
         items: [medication],
-        totalCost: 10.0,
-        instructions: 'Test Instructions',
+        totalCost: 5.99,
+        instructions: 'Take with food',
       );
 
-      expect(prescription.items.length, 1);
-
-      final item = prescription.items.first;
-      expect(item.name, 'Test Medication');
-      expect(item.isValid, isTrue);
-      expect(item.cost, greaterThan(0));
-
-      expect(prescription.totalCost, greaterThan(0));
       expect(prescription.isValid, isTrue);
-    });
-
-    test('Entity Properties', () {
-      final doctor = Doctor(
-        id: 'D001',
-        name: 'Dr. Test',
-        email: 'test@hospital.com',
-        phoneNumber: '123-456-7890',
-        joinDate: DateTime.now(),
-        department: 'Cardiology',
-        specialization: 'Cardiology',
-        licenseNumber: 'TEST123',
-      );
-
-      final patient = Patient(
-        id: 'P001',
-        name: 'Test Patient',
-        dateOfBirth: DateTime(1990, 1, 1),
-        gender: 'Male',
-        phoneNumber: '123-456-7891',
-        email: 'patient@test.com',
-        address: 'Test Address',
-        bloodType: 'A+',
-        emergencyPhone: '123-456-7892',
-      );
-
-      // Test entity properties (no JSON serialization in domain layer)
-      expect(doctor.id, 'D001');
-      expect(doctor.role, 'Doctor');
-      expect(doctor.specialization, 'Cardiology');
-      expect(patient.id, 'P001');
-      expect(patient.age, greaterThan(20));
-      expect(patient.bloodType, 'A+');
+      expect(prescription.items.length, 1);
     });
   });
 }

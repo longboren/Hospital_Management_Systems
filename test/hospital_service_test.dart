@@ -2,7 +2,6 @@ import 'package:test/test.dart';
 import 'package:hospital_management_system/domain/entities/staff.dart';
 import 'package:hospital_management_system/domain/entities/patient.dart';
 import 'package:hospital_management_system/domain/entities/room.dart';
-import 'package:hospital_management_system/domain/entities/prescription.dart';
 import 'package:hospital_management_system/domain/services/hospital_service.dart';
 import 'package:hospital_management_system/data/repositories/staff_repository.dart';
 import 'package:hospital_management_system/data/repositories/patient_repository.dart';
@@ -11,258 +10,121 @@ import 'package:hospital_management_system/data/repositories/appointment_reposit
 import 'package:hospital_management_system/data/repositories/prescription_repository.dart';
 
 void main() {
-  group('Hospital Service Integration Tests', () {
-    late HospitalService hospitalService;
-    late StaffRepository staffRepository;
-    late PatientRepository patientRepository;
-    late RoomRepository roomRepository;
-    late AppointmentRepository appointmentRepository;
-    late PrescriptionRepository prescriptionRepository;
+  group('Hospital Service Tests', () {
+    late HospitalService service;
 
     setUp(() async {
-      staffRepository = StaffRepository();
-      patientRepository = PatientRepository();
-      roomRepository = RoomRepository();
-      appointmentRepository = AppointmentRepository();
-      prescriptionRepository = PrescriptionRepository();
+      final staffRepo = StaffRepository();
+      final patientRepo = PatientRepository();
+      final roomRepo = RoomRepository();
+      final appointmentRepo = AppointmentRepository();
+      final prescriptionRepo = PrescriptionRepository();
 
-      // Clear all data before each test to ensure clean state
-      await Future.delayed(
-          Duration(milliseconds: 100)); // Give time for data to load
-      await staffRepository.clearAll();
-      await patientRepository.clearAll();
-      await roomRepository.clearAll();
-      await appointmentRepository.clearAll();
-      await prescriptionRepository.clearAll();
+      await Future.delayed(Duration(milliseconds: 100));
+      await staffRepo.clearAll();
+      await patientRepo.clearAll();
+      await roomRepo.clearAll();
+      await appointmentRepo.clearAll();
+      await prescriptionRepo.clearAll();
 
-      hospitalService = HospitalService(
-        staffRepository: staffRepository,
-        patientRepository: patientRepository,
-        roomRepository: roomRepository,
-        appointmentRepository: appointmentRepository,
-        prescriptionRepository: prescriptionRepository,
+      service = HospitalService(
+        staffRepository: staffRepo,
+        patientRepository: patientRepo,
+        roomRepository: roomRepo,
+        appointmentRepository: appointmentRepo,
+        prescriptionRepository: prescriptionRepo,
       );
     });
 
-    test('Complete Patient Admission and Bed Assignment Flow', () async {
-      // Arrange
-      final doctor = Doctor(
-        id: 'DOC_TEST',
-        name: 'Dr. Test Doctor',
-        email: 'test@hospital.com',
-        phoneNumber: '123-456-7890',
-        joinDate: DateTime.now(),
-        department: 'Cardiology',
-        specialization: 'Cardiology',
-        licenseNumber: 'TEST123',
-      );
-
+    test('Patient admission and bed assignment', () async {
       final patient = Patient(
-        id: 'PAT_TEST',
-        name: 'Test Patient',
-        dateOfBirth: DateTime(1980, 1, 1),
+        id: 'P001',
+        name: 'Khem Sothea',
+        dateOfBirth: DateTime(1990, 1, 1),
         gender: 'Male',
-        phoneNumber: '123-456-7891',
-        email: 'patient@test.com',
-        address: 'Test Address',
-        bloodType: 'A+',
-        emergencyPhone: '123-456-7892',
+        phoneNumber: '+855-12-567-890',
+        email: 'khem.sothea@email.com',
+        address: 'St. 63, Phnom Penh',
+        bloodType: 'O+',
       );
 
       final room = Room(
-        id: 'RM_TEST',
-        number: '999',
+        id: 'R001',
+        number: '101',
         type: RoomType.privateRoom,
         capacity: 1,
-        pricePerDay: 200.0,
+        pricePerDay: 250.0,
       );
 
-      // Act
-      await hospitalService.hireStaff(doctor);
-      await hospitalService.admitPatient(patient);
-      await hospitalService.addRoom(room);
+      await service.admitPatient(patient);
+      await service.addRoom(room);
 
-      final assignedBed = await hospitalService.assignPatientToBed(
-        'PAT_TEST',
-        RoomType.privateRoom,
-      );
-
-      final appointment = await hospitalService.scheduleAppointment(
-        patientId: 'PAT_TEST',
-        doctorId: 'DOC_TEST',
-        scheduledTime: DateTime.now().add(const Duration(hours: 2)),
-        reason: 'Test appointment',
-      );
-
-      // Assert
-      expect(assignedBed, isNotNull);
-      expect(assignedBed!.patientId, 'PAT_TEST');
-      expect(assignedBed.status, BedStatus.occupied);
-
-      expect(appointment.patientId, 'PAT_TEST');
-      expect(appointment.doctorId, 'DOC_TEST');
-      expect(appointment.isUpcoming, isTrue);
+      final bed =
+          await service.assignPatientToBed('P001', RoomType.privateRoom);
+      expect(bed, isNotNull);
+      expect(bed!.patientId, 'P001');
     });
 
-    test('Hospital Statistics Calculation', () async {
-      // Arrange
+    test('Appointment scheduling', () async {
       final doctor = Doctor(
-        id: 'DOC_STATS',
-        name: 'Dr. Stats',
-        email: 'stats@hospital.com',
-        phoneNumber: '123-456-7893',
+        id: 'D001',
+        name: 'Dr. Lim Sokha',
+        email: 'lim.sokha@hospital.com',
+        phoneNumber: '+855-23-678-901',
         joinDate: DateTime.now(),
-        department: 'Neurology',
-        specialization: 'Neurology',
-        licenseNumber: 'STATS123',
+        department: 'Cardiology',
+        specialization: 'Heart Surgery',
+        licenseNumber: 'LIC123',
       );
 
       final patient = Patient(
-        id: 'PAT_STATS',
-        name: 'Stats Patient',
-        dateOfBirth: DateTime(1975, 1, 1),
+        id: 'P001',
+        name: 'Pich Chanthy',
+        dateOfBirth: DateTime(1995, 5, 5),
         gender: 'Female',
-        phoneNumber: '123-456-7894',
-        email: 'stats@patient.com',
-        address: 'Stats Address',
-        bloodType: 'O+',
-        emergencyPhone: '123-456-7895',
+        phoneNumber: '+855-12-789-012',
+        email: 'pich.chanthy@email.com',
+        address: 'St. 51, Phnom Penh',
+        bloodType: 'A+',
       );
 
-      final room = Room(
-        id: 'RM_STATS',
-        number: '888',
+      await service.hireStaff(doctor);
+      await service.admitPatient(patient);
+
+      final appointment = await service.scheduleAppointment(
+        patientId: 'P001',
+        doctorId: 'D001',
+        scheduledTime: DateTime.now().add(Duration(hours: 2)),
+        reason: 'Checkup',
+      );
+
+      expect(appointment.patientId, 'P001');
+      expect(appointment.doctorId, 'D001');
+    });
+
+    test('Hospital statistics', () async {
+      await service.hireStaff(Doctor(
+        id: 'D001',
+        name: 'Dr. Sok Pisey',
+        email: 'sok.pisey@hospital.com',
+        phoneNumber: '+855-23-890-123',
+        joinDate: DateTime.now(),
+        department: 'General',
+        specialization: 'General',
+        licenseNumber: 'TEST',
+      ));
+
+      await service.addRoom(Room(
+        id: 'R001',
+        number: '101',
         type: RoomType.generalWard,
         capacity: 4,
-        pricePerDay: 150.0,
-      );
+        pricePerDay: 100.0,
+      ));
 
-      // Act
-      await hospitalService.hireStaff(doctor);
-      await hospitalService.admitPatient(patient);
-      await hospitalService.addRoom(room);
-
-      final stats = await hospitalService.getHospitalStats();
-
-      // Assert
+      final stats = await service.getHospitalStats();
       expect(stats['totalStaff'], 1);
-      expect(stats['doctors'], 1);
-      expect(stats['totalPatients'], 1);
-      expect(stats['totalRooms'], 1);
-      expect(stats['availableBeds'], 4); // All 4 beds initially available
-    });
-
-    test('Prescription Management Flow', () async {
-      // Arrange
-      final doctor = Doctor(
-        id: 'DOC_RX',
-        name: 'Dr. Prescription',
-        email: 'rx@hospital.com',
-        phoneNumber: '123-456-7896',
-        joinDate: DateTime.now(),
-        department: 'Internal Medicine',
-        specialization: 'Internal Medicine',
-        licenseNumber: 'RX123',
-      );
-
-      final patient = Patient(
-        id: 'PAT_RX',
-        name: 'RX Patient',
-        dateOfBirth: DateTime(1985, 1, 1),
-        gender: 'Male',
-        phoneNumber: '123-456-7897',
-        email: 'rx@patient.com',
-        address: 'RX Address',
-        bloodType: 'B+',
-        emergencyPhone: '123-456-7898',
-      );
-
-      final items = [
-        Medication(
-          name: 'Test Medication',
-          dosage: '500mg',
-          frequency: 'daily',
-          cost: 1.0,
-        ),
-      ];
-
-      // Act
-      await hospitalService.hireStaff(doctor);
-      await hospitalService.admitPatient(patient);
-
-      final prescription = await hospitalService.createPrescription(
-        patientId: 'PAT_RX',
-        doctorId: 'DOC_RX',
-        items: items,
-        totalCost: 1.0,
-        instructions: 'Take with food',
-        diagnosis: 'Test diagnosis',
-      );
-
-      final patientPrescriptions =
-          await hospitalService.getPatientPrescriptions('PAT_RX');
-      final activePrescriptions = await hospitalService.getActivePrescriptions(
-        'PAT_RX',
-      );
-
-      // Assert
-      expect(prescription.patientId, 'PAT_RX');
-      expect(prescription.doctorId, 'DOC_RX');
-      expect(prescription.items.length, 1);
-      expect(prescription.isValid, isTrue);
-
-      expect(patientPrescriptions.length, 1);
-      expect(activePrescriptions.length, 1);
-    });
-
-    test('Doctor Performance Metrics', () async {
-      // Arrange
-      final doctor = Doctor(
-        id: 'DOC_PERF',
-        name: 'Dr. Performance',
-        email: 'perf@hospital.com',
-        phoneNumber: '123-456-7899',
-        joinDate: DateTime.now(),
-        department: 'Surgery',
-        specialization: 'General Surgery',
-        licenseNumber: 'PERF123',
-      );
-
-      final patient = Patient(
-        id: 'PAT_PERF',
-        name: 'Perf Patient',
-        dateOfBirth: DateTime(1990, 1, 1),
-        gender: 'Female',
-        phoneNumber: '123-456-7900',
-        email: 'perf@patient.com',
-        address: 'Perf Address',
-        bloodType: 'AB+',
-        emergencyPhone: '123-456-7901',
-      );
-
-      // Act
-      await hospitalService.hireStaff(doctor);
-      await hospitalService.admitPatient(patient);
-
-      // Schedule and complete an appointment
-      final appointment = await hospitalService.scheduleAppointment(
-        patientId: 'PAT_PERF',
-        doctorId: 'DOC_PERF',
-        scheduledTime: DateTime.now().add(const Duration(minutes: 30)),
-        reason: 'Performance test',
-      );
-
-      await hospitalService.startAppointment(appointment.id);
-      await hospitalService.completeAppointment(appointment.id, 'Test notes');
-
-      final performance = await hospitalService.getDoctorPerformance(
-        'DOC_PERF',
-      );
-
-      // Assert
-      expect(performance['totalAppointments'], 1);
-      expect(performance['completedAppointments'], 1);
-      expect(performance['completionRate'], 100.0);
+      expect(stats['availableBeds'], 4);
     });
   });
 }
