@@ -1,1 +1,374 @@
-[{"id":"R001","number":"101","type":"generalWard","capacity":4,"pricePerDay":100.0,"equipment":[],"beds":[{"id":"R001-B01","roomId":"R001","bedNumber":1,"status":"available","patientId":null,"assignedDate":null,"dischargeDate":null},{"id":"R001-B02","roomId":"R001","bedNumber":2,"status":"available","patientId":null,"assignedDate":null,"dischargeDate":null},{"id":"R001-B03","roomId":"R001","bedNumber":3,"status":"available","patientId":null,"assignedDate":null,"dischargeDate":null},{"id":"R001-B04","roomId":"R001","bedNumber":4,"status":"available","patientId":null,"assignedDate":null,"dischargeDate":null}]}]
+[
+    {
+        "id": "R001",
+        "number": "101",
+        "type": "generalWard",
+        "capacity": 4,
+        "pricePerDay": 100.0,
+        "equipment": ["Monitor", "IV Stand", "Oxygen"],
+        "beds": [
+            {
+                "id": "R001-B01",
+                "roomId": "R001",
+                "bedNumber": 1,
+                "status": "occupied",
+                "patientId": "P001",
+                "assignedDate": "2024-01-15T09:30:00.000000",
+                "dischargeDate": null
+            },
+            {
+                "id": "R001-B02",
+                "roomId": "R001",
+                "bedNumber": 2,
+                "status": "occupied",
+                "patientId": "P006",
+                "assignedDate": "2024-06-20T13:20:00.000000",
+                "dischargeDate": null
+            },
+            {
+                "id": "R001-B03",
+                "roomId": "R001",
+                "bedNumber": 3,
+                "status": "occupied",
+                "patientId": "P008",
+                "assignedDate": "2024-08-12T10:30:00.000000",
+                "dischargeDate": null
+            },
+            {
+                "id": "R001-B04",
+                "roomId": "R001",
+                "bedNumber": 4,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R002",
+        "number": "102",
+        "type": "privateRoom",
+        "capacity": 1,
+        "pricePerDay": 350.0,
+        "equipment": ["Monitor", "IV Stand", "Oxygen", "TV", "Private Bathroom", "Recliner"],
+        "beds": [
+            {
+                "id": "R002-B01",
+                "roomId": "R002",
+                "bedNumber": 1,
+                "status": "occupied",
+                "patientId": "P003",
+                "assignedDate": "2024-02-10T11:00:00.000000",
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R003",
+        "number": "201",
+        "type": "icu",
+        "capacity": 2,
+        "pricePerDay": 500.0,
+        "equipment": ["Ventilator", "Cardiac Monitor", "Defibrillator", "IV Pumps", "Oxygen", "Suction"],
+        "beds": [
+            {
+                "id": "R003-B01",
+                "roomId": "R003",
+                "bedNumber": 1,
+                "status": "occupied",
+                "patientId": "P002",
+                "assignedDate": "2024-03-20T10:15:00.000000",
+                "dischargeDate": null
+            },
+            {
+                "id": "R003-B02",
+                "roomId": "R003",
+                "bedNumber": 2,
+                "status": "occupied",
+                "patientId": "P005",
+                "assignedDate": "2024-04-05T08:45:00.000000",
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R004",
+        "number": "103",
+        "type": "generalWard",
+        "capacity": 4,
+        "pricePerDay": 100.0,
+        "equipment": ["Monitor", "IV Stand", "Oxygen"],
+        "beds": [
+            {
+                "id": "R004-B01",
+                "roomId": "R004",
+                "bedNumber": 1,
+                "status": "occupied",
+                "patientId": "P009",
+                "assignedDate": "2024-09-25T09:00:00.000000",
+                "dischargeDate": null
+            },
+            {
+                "id": "R004-B02",
+                "roomId": "R004",
+                "bedNumber": 2,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            },
+            {
+                "id": "R004-B03",
+                "roomId": "R004",
+                "bedNumber": 3,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            },
+            {
+                "id": "R004-B04",
+                "roomId": "R004",
+                "bedNumber": 4,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R005",
+        "number": "104",
+        "type": "privateRoom",
+        "capacity": 1,
+        "pricePerDay": 350.0,
+        "equipment": ["Monitor", "IV Stand", "Oxygen", "TV", "Private Bathroom", "Recliner"],
+        "beds": [
+            {
+                "id": "R005-B01",
+                "roomId": "R005",
+                "bedNumber": 1,
+                "status": "occupied",
+                "patientId": "P007",
+                "assignedDate": "2024-07-08T16:00:00.000000",
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R006",
+        "number": "301",
+        "type": "generalWard",
+        "capacity": 2,
+        "pricePerDay": 120.0,
+        "equipment": ["Monitor", "IV Stand", "Oxygen", "Pediatric Equipment"],
+        "beds": [
+            {
+                "id": "R006-B01",
+                "roomId": "R006",
+                "bedNumber": 1,
+                "status": "occupied",
+                "patientId": "P004",
+                "assignedDate": "2024-05-15T14:30:00.000000",
+                "dischargeDate": null
+            },
+            {
+                "id": "R006-B02",
+                "roomId": "R006",
+                "bedNumber": 2,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R007",
+        "number": "105",
+        "type": "privateRoom",
+        "capacity": 1,
+        "pricePerDay": 350.0,
+        "equipment": ["Monitor", "IV Stand", "Oxygen", "TV", "Private Bathroom", "Recliner"],
+        "beds": [
+            {
+                "id": "R007-B01",
+                "roomId": "R007",
+                "bedNumber": 1,
+                "status": "occupied",
+                "patientId": "P010",
+                "assignedDate": "2024-10-15T15:45:00.000000",
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R008",
+        "number": "202",
+        "type": "icu",
+        "capacity": 2,
+        "pricePerDay": 500.0,
+        "equipment": ["Ventilator", "Cardiac Monitor", "Defibrillator", "IV Pumps", "Oxygen", "Suction"],
+        "beds": [
+            {
+                "id": "R008-B01",
+                "roomId": "R008",
+                "bedNumber": 1,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            },
+            {
+                "id": "R008-B02",
+                "roomId": "R008",
+                "bedNumber": 2,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R009",
+        "number": "106",
+        "type": "generalWard",
+        "capacity": 4,
+        "pricePerDay": 100.0,
+        "equipment": ["Monitor", "IV Stand", "Oxygen"],
+        "beds": [
+            {
+                "id": "R009-B01",
+                "roomId": "R009",
+                "bedNumber": 1,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            },
+            {
+                "id": "R009-B02",
+                "roomId": "R009",
+                "bedNumber": 2,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            },
+            {
+                "id": "R009-B03",
+                "roomId": "R009",
+                "bedNumber": 3,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            },
+            {
+                "id": "R009-B04",
+                "roomId": "R009",
+                "bedNumber": 4,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R010",
+        "number": "107",
+        "type": "privateRoom",
+        "capacity": 1,
+        "pricePerDay": 350.0,
+        "equipment": ["Monitor", "IV Stand", "Oxygen", "TV", "Private Bathroom", "Recliner"],
+        "beds": [
+            {
+                "id": "R010-B01",
+                "roomId": "R010",
+                "bedNumber": 1,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R011",
+        "number": "203",
+        "type": "icu",
+        "capacity": 2,
+        "pricePerDay": 500.0,
+        "equipment": ["Ventilator", "Cardiac Monitor", "Defibrillator", "IV Pumps", "Oxygen", "Suction"],
+        "beds": [
+            {
+                "id": "R011-B01",
+                "roomId": "R011",
+                "bedNumber": 1,
+                "status": "maintenance",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            },
+            {
+                "id": "R011-B02",
+                "roomId": "R011",
+                "bedNumber": 2,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            }
+        ]
+    },
+    {
+        "id": "R012",
+        "number": "108",
+        "type": "generalWard",
+        "capacity": 4,
+        "pricePerDay": 100.0,
+        "equipment": ["Monitor", "IV Stand", "Oxygen"],
+        "beds": [
+            {
+                "id": "R012-B01",
+                "roomId": "R012",
+                "bedNumber": 1,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            },
+            {
+                "id": "R012-B02",
+                "roomId": "R012",
+                "bedNumber": 2,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            },
+            {
+                "id": "R012-B03",
+                "roomId": "R012",
+                "bedNumber": 3,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            },
+            {
+                "id": "R012-B04",
+                "roomId": "R012",
+                "bedNumber": 4,
+                "status": "available",
+                "patientId": null,
+                "assignedDate": null,
+                "dischargeDate": null
+            }
+        ]
+    }
+]

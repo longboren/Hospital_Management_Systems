@@ -1,1 +1,132 @@
-[]
+[
+    {
+        "id": "APT001",
+        "patientId": "P001",
+        "doctorId": "D001",
+        "dateTime": "2024-11-15T09:00:00.000000",
+        "reason": "Cardiac checkup and blood pressure monitoring",
+        "status": "scheduled",
+        "notes": "Patient has history of hypertension",
+        "duration": 30
+    },
+    {
+        "id": "APT002",
+        "patientId": "P003",
+        "doctorId": "D002",
+        "dateTime": "2024-11-15T10:00:00.000000",
+        "reason": "Neurological examination for headaches",
+        "status": "scheduled",
+        "notes": "Patient complains of severe migraines",
+        "duration": 45
+    },
+    {
+        "id": "APT003",
+        "patientId": "P004",
+        "doctorId": "D003",
+        "dateTime": "2024-11-15T11:30:00.000000",
+        "reason": "Pediatric routine checkup",
+        "status": "scheduled",
+        "notes": "Vaccination due",
+        "duration": 30
+    },
+    {
+        "id": "APT004",
+        "patientId": "P007",
+        "doctorId": "D004",
+        "dateTime": "2024-11-15T14:00:00.000000",
+        "reason": "Post-surgery follow-up",
+        "status": "scheduled",
+        "notes": "Check surgical wound healing",
+        "duration": 30
+    },
+    {
+        "id": "APT005",
+        "patientId": "P008",
+        "doctorId": "D006",
+        "dateTime": "2024-11-16T09:30:00.000000",
+        "reason": "Skin rash examination",
+        "status": "scheduled",
+        "notes": "Patient reports allergic reaction",
+        "duration": 30
+    },
+    {
+        "id": "APT006",
+        "patientId": "P009",
+        "doctorId": "D007",
+        "dateTime": "2024-11-16T10:30:00.000000",
+        "reason": "Surgical consultation for hernia",
+        "status": "scheduled",
+        "notes": "Pre-operative assessment needed",
+        "duration": 45
+    },
+    {
+        "id": "APT007",
+        "patientId": "P010",
+        "doctorId": "D008",
+        "dateTime": "2024-11-16T15:00:00.000000",
+        "reason": "Prenatal checkup",
+        "status": "scheduled",
+        "notes": "First trimester ultrasound",
+        "duration": 30
+    },
+    {
+        "id": "APT008",
+        "patientId": "P006",
+        "doctorId": "D001",
+        "dateTime": "2024-11-14T10:00:00.000000",
+        "reason": "Heart palpitations assessment",
+        "status": "completed",
+        "notes": "ECG performed, results normal",
+        "duration": 45
+    },
+    {
+        "id": "APT009",
+        "patientId": "P002",
+        "doctorId": "D002",
+        "dateTime": "2024-11-13T14:30:00.000000",
+        "reason": "Follow-up for asthma management",
+        "status": "completed",
+        "notes": "Medication adjusted",
+        "duration": 30
+    },
+    {
+        "id": "APT010",
+        "patientId": "P005",
+        "doctorId": "D004",
+        "dateTime": "2024-11-12T11:00:00.000000",
+        "reason": "Arthritis pain management",
+        "status": "completed",
+        "notes": "Prescribed pain relief medication",
+        "duration": 30
+    },
+    {
+        "id": "APT011",
+        "patientId": "P011",
+        "doctorId": "D003",
+        "dateTime": "2024-11-17T09:00:00.000000",
+        "reason": "Sports injury examination",
+        "status": "scheduled",
+        "notes": "Knee pain after basketball",
+        "duration": 30
+    },
+    {
+        "id": "APT012",
+        "patientId": "P012",
+        "doctorId": "D005",
+        "dateTime": "2024-11-18T10:00:00.000000",
+        "reason": "Cancer screening consultation",
+        "status": "scheduled",
+        "notes": "Family history of breast cancer",
+        "duration": 60
+    },
+    {
+        "id": "APT013",
+        "patientId": "P001",
+        "doctorId": "D007",
+        "dateTime": "2024-11-10T09:00:00.000000",
+        "reason": "General health checkup",
+        "status": "cancelled",
+        "notes": "Patient cancelled due to emergency",
+        "duration": 30
+    }
+]
