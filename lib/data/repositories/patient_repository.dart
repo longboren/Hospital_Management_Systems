@@ -28,15 +28,28 @@ class PatientRepository implements IPatientRepository {
   }
 
   Patient _fromJson(Map<String, dynamic> json) {
+    // Calculate date of birth from age if age is provided
+    DateTime dateOfBirth;
+    if (json.containsKey('age')) {
+      final age = json['age'] as int;
+      final now = DateTime.now();
+      dateOfBirth = DateTime(now.year - age, now.month, now.day);
+    } else if (json.containsKey('dateOfBirth')) {
+      dateOfBirth = DateTime.parse(json['dateOfBirth']);
+    } else {
+      // Default to current date if neither is provided
+      dateOfBirth = DateTime.now();
+    }
+
     return Patient(
       id: json['id'],
       name: json['name'],
-      dateOfBirth: DateTime.parse(json['dateOfBirth']),
+      dateOfBirth: dateOfBirth,
       gender: json['gender'],
       address: json['address'],
       phoneNumber: json['phoneNumber'],
       email: json['email'],
-      emergencyPhone: json['emergencyPhone'],
+      emergencyPhone: json['emergencyContactPhone'] ?? json['emergencyPhone'],
       bloodType: json['bloodType'],
       medicalHistory: List<String>.from(json['medicalHistory'] ?? []),
       allergies: List<String>.from(json['allergies'] ?? []),
@@ -48,19 +61,18 @@ class PatientRepository implements IPatientRepository {
     return {
       'id': patient.id,
       'name': patient.name,
+      'age': patient.age,
       'dateOfBirth': patient.dateOfBirth.toIso8601String(),
       'gender': patient.gender,
       'address': patient.address,
       'phoneNumber': patient.phoneNumber,
       'email': patient.email,
-      'emergencyPhone': patient.emergencyPhone,
+      'emergencyContactPhone': patient.emergencyPhone,
       'bloodType': patient.bloodType,
       'medicalHistory': patient.medicalHistory,
-      'appointmentIds': patient.appointmentIds,
-      'prescriptionIds': patient.prescriptionIds,
       'allergies': patient.allergies,
       'medicalConditions': patient.medicalConditions,
-      'createdAt': patient.createdAt.toIso8601String(),
+      'registrationDate': patient.createdAt.toIso8601String(),
     };
   }
 

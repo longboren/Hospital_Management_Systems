@@ -14,13 +14,22 @@ class AppointmentRepository implements IAppointmentRepository {
   Future<void> _loadData() async {
     try {
       final file = File(_filePath);
+      print('📁 Loading appointments from: ${file.absolute.path}');
+      
       if (await file.exists()) {
         final jsonString = await file.readAsString();
+        print('📄 File content length: ${jsonString.length} characters');
+        
         final List<dynamic> jsonList = json.decode(jsonString);
+        print('📋 Found ${jsonList.length} appointments in JSON');
+        
         for (var jsonItem in jsonList) {
           final appointment = _fromJson(jsonItem);
           _appointmentStorage[appointment.id] = appointment;
         }
+        print('✅ Loaded ${_appointmentStorage.length} appointments into storage');
+      } else {
+        print('❌ File does not exist: ${file.absolute.path}');
       }
     } catch (e) {
       print('Error loading appointment data: $e');
@@ -28,25 +37,38 @@ class AppointmentRepository implements IAppointmentRepository {
   }
 
   Appointment _fromJson(Map<String, dynamic> json) {
-    return Appointment(
-      id: json['id'],
-      patientId: json['patientId'],
-      doctorId: json['doctorId'],
-      scheduledTime: DateTime.parse(json['scheduledTime']),
-      reason: json['reason'],
+    // Handle both 'dateTime' and 'scheduledTime' field names
+    final String? dateTimeStr = json['dateTime'] as String? ?? json['scheduledTime'] as String?;
+    if (dateTimeStr == null) {
+      throw Exception('Appointment must have a dateTime or scheduledTime field');
+    }
+    
+    final appointment = Appointment(
+      id: json['id'] as String? ?? '',
+      patientId: json['patientId'] as String? ?? '',
+      doctorId: json['doctorId'] as String? ?? '',
+      scheduledTime: DateTime.parse(dateTimeStr),
+      reason: json['reason'] as String? ?? '',
       status: AppointmentStatus.values.firstWhere(
-        (e) => e.name == json['status'],
+        (e) => e.name == (json['status'] as String? ?? 'scheduled'),
         orElse: () => AppointmentStatus.scheduled,
       ),
-      appointmentType: json['appointmentType'],
-      roomId: json['roomId'],
+      appointmentType: json['appointmentType'] as String? ?? 'General Checkup',
+      roomId: json['roomId'] as String?,
       startTime: json['actualStartTime'] != null
-          ? DateTime.parse(json['actualStartTime'])
+          ? DateTime.parse(json['actualStartTime'] as String)
           : null,
       endTime: json['actualEndTime'] != null
-          ? DateTime.parse(json['actualEndTime'])
+          ? DateTime.parse(json['actualEndTime'] as String)
           : null,
     );
+    
+    // Add notes if present in JSON
+    if (json['notes'] != null && json['notes'] != '') {
+      appointment.addNotes(json['notes'] as String);
+    }
+    
+    return appointment;
   }
 
   Map<String, dynamic> _toJson(Appointment appointment) {
@@ -54,15 +76,15 @@ class AppointmentRepository implements IAppointmentRepository {
       'id': appointment.id,
       'patientId': appointment.patientId,
       'doctorId': appointment.doctorId,
-      'scheduledTime': appointment.scheduledTime.toIso8601String(),
-      'actualStartTime': appointment.actualStartTime?.toIso8601String(),
-      'actualEndTime': appointment.actualEndTime?.toIso8601String(),
+      'dateTime': appointment.scheduledTime.toIso8601String(),
       'reason': appointment.reason,
       'status': appointment.status.name,
-      'notes': appointment.notes,
+      'notes': appointment.notes ?? '',
       'appointmentType': appointment.appointmentType,
       'roomId': appointment.roomId,
-      'createdAt': appointment.createdAt.toIso8601String(),
+      'actualStartTime': appointment.actualStartTime?.toIso8601String(),
+      'actualEndTime': appointment.actualEndTime?.toIso8601String(),
+      'duration': appointment.duration?.inMinutes ?? 30,
     };
   }
 
@@ -109,6 +131,11 @@ class AppointmentRepository implements IAppointmentRepository {
   @override
   Future<List<Appointment>> getUpcomingAppointments() async {
     return _appointmentStorage.values.where((a) => a.isUpcoming).toList();
+  }
+  
+  // Get all appointments regardless of status
+  Future<List<Appointment>> getAllAppointments() async {
+    return _appointmentStorage.values.toList();
   }
 
   @override

@@ -459,26 +459,40 @@ class ConsoleUI {
     print('-' * 60);
 
     try {
+      print('Fetching patients from service...');
       final patients = await _hospitalService.getAllPatients();
+      print('Retrieved ${patients.length} patients');
 
       if (patients.isEmpty) {
-        print('No patients found.');
+        print('❌ No patients found in the system.');
+        print('💡 Tip: Use option 1 to admit a new patient.');
         return;
       }
 
       for (int i = 0; i < patients.length; i++) {
         final patient = patients[i];
-        print('${i + 1}. ${patient.name} (${patient.age} years)');
+        print('\n${i + 1}. ${patient.name} (${patient.age} years old)');
         print('   ID: ${patient.id}');
         print('   Gender: ${patient.gender}');
         print('   Phone: ${patient.phoneNumber}');
         print('   Blood Type: ${patient.bloodType}');
+        print('   Email: ${patient.email}');
+        print('   Address: ${patient.address}');
+        if (patient.medicalConditions.isNotEmpty) {
+          print('   Conditions: ${patient.medicalConditions.join(', ')}');
+        }
+        if (patient.allergies.isNotEmpty) {
+          print('   Allergies: ${patient.allergies.join(', ')}');
+        }
         print('   Appointments: ${patient.appointmentIds.length}');
         print('   Prescriptions: ${patient.prescriptionIds.length}');
         print('-' * 40);
       }
+      
+      print('\n📊 Total Patients: ${patients.length}');
     } catch (e) {
       print('❌ Error fetching patients: $e');
+      print('Stack trace: ${StackTrace.current}');
     }
   }
 
@@ -665,18 +679,24 @@ class ConsoleUI {
     print('-' * 60);
 
     try {
+      print('Fetching rooms from service...');
       final rooms = await _hospitalService.getAllRooms();
+      print('Retrieved ${rooms.length} rooms');
 
       if (rooms.isEmpty) {
-        print('No rooms found.');
+        print('❌ No rooms found in the system.');
+        print('💡 Tip: Use option 1 to add a new room.');
         return;
       }
 
       for (final room in rooms) {
         _printRoomSummary(room);
       }
+      
+      print('\n📊 Total Rooms: ${rooms.length}');
     } catch (e) {
       print('❌ Error fetching rooms: $e');
+      print('Stack trace: ${StackTrace.current}');
     }
   }
 
@@ -762,9 +782,11 @@ class ConsoleUI {
       print('-' * 40);
       print('1. Schedule New Appointment');
       print('2. View Upcoming Appointments');
-      print('3. View Doctor Appointments');
-      print('4. Start Appointment');
-      print('5. Complete Appointment');
+      print('3. View All Appointments');
+      print('4. View Doctor Appointments');
+      print('5. View Patient Appointments');
+      print('6. Start Appointment');
+      print('7. Complete Appointment');
       print('0. Back to Main Menu');
 
       final choice = _getUserInput('Enter your choice: ');
@@ -777,12 +799,18 @@ class ConsoleUI {
           await _viewUpcomingAppointments();
           break;
         case '3':
-          await _viewDoctorAppointments();
+          await _viewAllAppointments();
           break;
         case '4':
-          await _startAppointment();
+          await _viewDoctorAppointments();
           break;
         case '5':
+          await _viewPatientAppointments();
+          break;
+        case '6':
+          await _startAppointment();
+          break;
+        case '7':
           await _completeAppointment();
           break;
         case '0':
@@ -835,18 +863,26 @@ class ConsoleUI {
     print('-' * 60);
 
     try {
+      print('Fetching upcoming appointments...');
       final appointments = await _hospitalService.getUpcomingAppointments();
+      print('Retrieved ${appointments.length} upcoming appointments');
 
       if (appointments.isEmpty) {
-        print('No upcoming appointments.');
+        print('❌ No upcoming appointments scheduled.');
+        print('💡 Tip: Use option 1 to schedule a new appointment.');
         return;
       }
 
-      for (final appointment in appointments) {
+      for (int i = 0; i < appointments.length; i++) {
+        final appointment = appointments[i];
+        print('\n${i + 1}. ${_formatDateTime(appointment.scheduledTime)}');
         _printAppointmentSummary(appointment);
       }
+      
+      print('\n📊 Total Upcoming Appointments: ${appointments.length}');
     } catch (e) {
       print('❌ Error fetching appointments: $e');
+      print('Stack trace: ${StackTrace.current}');
     }
   }
 
@@ -859,17 +895,111 @@ class ConsoleUI {
       );
 
       if (appointments.isEmpty) {
-        print('No appointments found for this doctor.');
+        print('❌ No appointments found for this doctor.');
         return;
       }
 
       print('\n📅 DOCTOR APPOINTMENTS');
       print('-' * 60);
-      for (final appointment in appointments) {
-        _printAppointmentSummary(appointment);
+      for (int i = 0; i < appointments.length; i++) {
+        print('\n${i + 1}.');
+        _printAppointmentSummary(appointments[i]);
       }
+      
+      print('\n📊 Total Appointments: ${appointments.length}');
     } catch (e) {
       print('❌ Error fetching doctor appointments: $e');
+    }
+  }
+
+  Future<void> _viewAllAppointments() async {
+    print('\n📅 ALL APPOINTMENTS');
+    print('-' * 60);
+
+    try {
+      print('Fetching all appointments...');
+      final appointments = await _hospitalService.getAllAppointments();
+      print('Retrieved ${appointments.length} appointments');
+
+      if (appointments.isEmpty) {
+        print('❌ No appointments found in the system.');
+        print('💡 Tip: Use option 1 to schedule a new appointment.');
+        return;
+      }
+
+      // Group by status
+      final scheduled = appointments.where((a) => a.status == AppointmentStatus.scheduled).toList();
+      final inProgress = appointments.where((a) => a.status == AppointmentStatus.inProgress).toList();
+      final completed = appointments.where((a) => a.status == AppointmentStatus.completed).toList();
+      final cancelled = appointments.where((a) => a.status == AppointmentStatus.cancelled).toList();
+
+      if (scheduled.isNotEmpty) {
+        print('\n⏰ SCHEDULED (${scheduled.length})');
+        print('-' * 40);
+        for (var apt in scheduled) {
+          print('${apt.id} - ${_formatDateTime(apt.scheduledTime)}');
+          print('  Patient: ${apt.patientId} | Doctor: ${apt.doctorId}');
+          print('  Reason: ${apt.reason}');
+        }
+      }
+
+      if (inProgress.isNotEmpty) {
+        print('\n🔵 IN PROGRESS (${inProgress.length})');
+        print('-' * 40);
+        for (var apt in inProgress) {
+          print('${apt.id} - ${_formatDateTime(apt.scheduledTime)}');
+          print('  Patient: ${apt.patientId} | Doctor: ${apt.doctorId}');
+        }
+      }
+
+      if (completed.isNotEmpty) {
+        print('\n✅ COMPLETED (${completed.length})');
+        print('-' * 40);
+        for (var apt in completed) {
+          print('${apt.id} - ${_formatDateTime(apt.scheduledTime)}');
+          print('  Patient: ${apt.patientId} | Doctor: ${apt.doctorId}');
+        }
+      }
+
+      if (cancelled.isNotEmpty) {
+        print('\n❌ CANCELLED (${cancelled.length})');
+        print('-' * 40);
+        for (var apt in cancelled) {
+          print('${apt.id} - ${_formatDateTime(apt.scheduledTime)}');
+          print('  Patient: ${apt.patientId} | Doctor: ${apt.doctorId}');
+        }
+      }
+
+      print('\n📊 Total Appointments: ${appointments.length}');
+    } catch (e) {
+      print('❌ Error fetching appointments: $e');
+      print('Stack trace: ${StackTrace.current}');
+    }
+  }
+
+  Future<void> _viewPatientAppointments() async {
+    final patientId = _getUserInput('Enter Patient ID: ');
+
+    try {
+      final appointments = await _hospitalService.getAppointmentsByPatient(
+        patientId,
+      );
+
+      if (appointments.isEmpty) {
+        print('❌ No appointments found for this patient.');
+        return;
+      }
+
+      print('\n📅 PATIENT APPOINTMENTS');
+      print('-' * 60);
+      for (int i = 0; i < appointments.length; i++) {
+        print('\n${i + 1}.');
+        _printAppointmentSummary(appointments[i]);
+      }
+      
+      print('\n📊 Total Appointments: ${appointments.length}');
+    } catch (e) {
+      print('❌ Error fetching patient appointments: $e');
     }
   }
 
@@ -958,6 +1088,8 @@ class ConsoleUI {
       print('1. Create New Prescription');
       print('2. View Patient Prescriptions');
       print('3. View Active Prescriptions');
+      print('4. View All Prescriptions');
+      print('5. View Doctor Prescriptions');
       print('0. Back to Main Menu');
 
       final choice = _getUserInput('Enter your choice: ');
@@ -971,6 +1103,12 @@ class ConsoleUI {
           break;
         case '3':
           await _viewActivePrescriptions();
+          break;
+        case '4':
+          await _viewAllPrescriptions();
+          break;
+        case '5':
+          await _viewDoctorPrescriptions();
           break;
         case '0':
           return;
@@ -1070,17 +1208,100 @@ class ConsoleUI {
       );
 
       if (prescriptions.isEmpty) {
-        print('No active prescriptions found for this patient.');
+        print('❌ No active prescriptions found for this patient.');
         return;
       }
 
       print('\n💊 ACTIVE PRESCRIPTIONS');
       print('-' * 60);
-      for (final prescription in prescriptions) {
-        _printPrescriptionSummary(prescription);
+      for (int i = 0; i < prescriptions.length; i++) {
+        print('\n${i + 1}.');
+        _printPrescriptionSummary(prescriptions[i]);
       }
+      
+      print('\n📊 Total Active Prescriptions: ${prescriptions.length}');
     } catch (e) {
       print('❌ Error fetching active prescriptions: $e');
+    }
+  }
+
+  Future<void> _viewAllPrescriptions() async {
+    print('\n💊 ALL PRESCRIPTIONS');
+    print('-' * 60);
+
+    try {
+      // We'll need to get all patients and then their prescriptions
+      final patients = await _hospitalService.getAllPatients();
+      var allPrescriptions = <Prescription>[];
+      
+      for (var patient in patients) {
+        final prescriptions = await _hospitalService.getPatientPrescriptions(patient.id);
+        allPrescriptions.addAll(prescriptions);
+      }
+
+      if (allPrescriptions.isEmpty) {
+        print('❌ No prescriptions found in the system.');
+        print('💡 Tip: Use option 1 to create a new prescription.');
+        return;
+      }
+
+      // Group by validity
+      final active = allPrescriptions.where((p) => p.isValid).toList();
+      final expired = allPrescriptions.where((p) => !p.isValid).toList();
+
+      if (active.isNotEmpty) {
+        print('\n✅ ACTIVE PRESCRIPTIONS (${active.length})');
+        print('-' * 40);
+        for (var rx in active) {
+          print('${rx.id} - Patient: ${rx.patientId}');
+          print('  Doctor: ${rx.doctorId}');
+          print('  Diagnosis: ${rx.diagnosis}');
+          print('  Medications: ${rx.items.length}');
+          print('  Cost: \$${rx.totalCost.toStringAsFixed(2)}');
+          print('-' * 30);
+        }
+      }
+
+      if (expired.isNotEmpty) {
+        print('\n❌ EXPIRED/COMPLETED (${expired.length})');
+        print('-' * 40);
+        for (var rx in expired) {
+          print('${rx.id} - Patient: ${rx.patientId}');
+          print('  Issued: ${_formatDate(rx.issueDate)}');
+          print('  Diagnosis: ${rx.diagnosis}');
+        }
+      }
+
+      print('\n📊 Total Prescriptions: ${allPrescriptions.length}');
+    } catch (e) {
+      print('❌ Error fetching prescriptions: $e');
+      print('Stack trace: ${StackTrace.current}');
+    }
+  }
+
+  Future<void> _viewDoctorPrescriptions() async {
+    final doctorId = _getUserInput('Enter Doctor ID: ');
+
+    try {
+      final prescriptions = await _hospitalService.getPrescriptionsByDoctor(
+        doctorId,
+      );
+
+      if (prescriptions.isEmpty) {
+        print('❌ No prescriptions found for this doctor.');
+        return;
+      }
+
+      print('\n💊 DOCTOR PRESCRIPTIONS');
+      print('-' * 60);
+      for (int i = 0; i < prescriptions.length; i++) {
+        print('\n${i + 1}.');
+        _printPrescriptionSummary(prescriptions[i]);
+      }
+      
+      print('\n📊 Total Prescriptions: ${prescriptions.length}');
+    } catch (e) {
+      print('❌ Error fetching doctor prescriptions: $e');
     }
   }
 

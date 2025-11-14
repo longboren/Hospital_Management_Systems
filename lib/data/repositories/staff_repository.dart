@@ -40,42 +40,53 @@ class StaffRepository implements IStaffRepository {
   }
 
   Staff _fromJson(Map<String, dynamic> json) {
-    final role = json['role'];
+    final role = json['role'] as String?;
+    if (role == null) {
+      throw Exception('Staff role is required');
+    }
+    
     switch (role) {
       case 'Doctor':
         return Doctor(
-          id: json['id'],
-          name: json['name'],
-          email: json['email'],
-          phoneNumber: json['phoneNumber'],
-          joinDate: DateTime.parse(json['joinDate']),
-          department: json['department'],
-          specialization: json['specialization'],
-          licenseNumber: json['licenseNumber'],
-          qualifications: List<String>.from(json['qualifications'] ?? []),
+          id: json['id'] as String? ?? '',
+          name: json['name'] as String? ?? '',
+          email: json['email'] as String? ?? '',
+          phoneNumber: json['phoneNumber'] as String? ?? '',
+          joinDate: DateTime.parse(json['joinDate'] as String? ?? DateTime.now().toIso8601String()),
+          department: json['department'] as String? ?? '',
+          specialization: json['specialization'] as String? ?? '',
+          licenseNumber: json['licenseNumber'] as String? ?? '',
+          qualifications: json['qualifications'] != null 
+            ? List<String>.from(json['qualifications'])
+            : [],
         );
       case 'Nurse':
         return Nurse(
-          id: json['id'],
-          name: json['name'],
-          email: json['email'],
-          phoneNumber: json['phoneNumber'],
-          joinDate: DateTime.parse(json['joinDate']),
-          department: json['department'],
-          ward: json['ward'],
-          shift: json['shift'],
-          specialties: List<String>.from(json['specialties'] ?? []),
+          id: json['id'] as String? ?? '',
+          name: json['name'] as String? ?? '',
+          email: json['email'] as String? ?? '',
+          phoneNumber: json['phoneNumber'] as String? ?? '',
+          joinDate: DateTime.parse(json['joinDate'] as String? ?? DateTime.now().toIso8601String()),
+          department: json['department'] as String? ?? '',
+          ward: json['ward'] as String? ?? json['department'] as String? ?? '',
+          shift: json['shift'] as String? ?? 'Day',
+          specialties: json['specialties'] != null
+            ? List<String>.from(json['specialties'])
+            : [],
         );
+      case 'Administrator':
       case 'Administrative':
         return Administrative(
-          id: json['id'],
-          name: json['name'],
-          email: json['email'],
-          phoneNumber: json['phoneNumber'],
-          joinDate: DateTime.parse(json['joinDate']),
-          department: json['department'],
-          position: json['position'],
-          responsibilities: List<String>.from(json['responsibilities'] ?? []),
+          id: json['id'] as String? ?? '',
+          name: json['name'] as String? ?? '',
+          email: json['email'] as String? ?? '',
+          phoneNumber: json['phoneNumber'] as String? ?? '',
+          joinDate: DateTime.parse(json['joinDate'] as String? ?? DateTime.now().toIso8601String()),
+          department: json['department'] as String? ?? '',
+          position: json['position'] as String? ?? json['accessLevel'] as String? ?? 'Staff',
+          responsibilities: json['responsibilities'] != null
+            ? List<String>.from(json['responsibilities'])
+            : [],
         );
       default:
         throw Exception('Unknown staff role: $role');

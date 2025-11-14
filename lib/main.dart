@@ -16,6 +16,13 @@ void main() async {
   final appointmentRepository = AppointmentRepository();
   final prescriptionRepository = PrescriptionRepository();
 
+  // Wait for all data to load
+  print('Loading data from JSON files...');
+  await Future.delayed(const Duration(seconds: 2));
+
+  print('✓ All data loaded from JSON files');
+  print('Ready to use the Hospital Management System!\n');
+
   // Initialize service with dependencies
   final hospitalService = HospitalService(
     staffRepository: staffRepository,
@@ -24,12 +31,6 @@ void main() async {
     appointmentRepository: appointmentRepository,
     prescriptionRepository: prescriptionRepository,
   );
-
-  // Give repositories time to load data asynchronously
-  await Future.delayed(const Duration(milliseconds: 500));
-
-  print('✓ All data loaded from JSON files');
-  print('Ready to use the Hospital Management System!\n');
 
   // Initialize and run UI
   final consoleUI = ConsoleUI(hospitalService);

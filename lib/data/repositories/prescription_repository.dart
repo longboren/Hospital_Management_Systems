@@ -29,12 +29,12 @@ class PrescriptionRepository implements IPrescriptionRepository {
 
   Medication _medicationFromJson(Map<String, dynamic> json) {
     return Medication(
-      name: json['name'],
-      dosage: json['dosage'],
-      frequency: json['frequency'],
-      notes: json['notes'],
-      cost: (json['cost'] as num).toDouble(),
-      isValid: json['isValid'] ?? true,
+      name: json['name'] as String? ?? json['medicationName'] as String? ?? '',
+      dosage: json['dosage'] as String? ?? '',
+      frequency: json['frequency'] as String? ?? '',
+      notes: json['notes'] as String? ?? json['instructions'] as String?,
+      cost: (json['cost'] as num?)?.toDouble() ?? 0.0,
+      isValid: json['isValid'] as bool? ?? true,
     );
   }
 
@@ -50,21 +50,49 @@ class PrescriptionRepository implements IPrescriptionRepository {
   }
 
   Prescription _fromJson(Map<String, dynamic> json) {
+    // Handle both nested 'items' structure and flat medication structure
+    List<Medication> medications;
+    
+    if (json.containsKey('items') && json['items'] is List) {
+      // New format with nested items
+      medications = (json['items'] as List)
+          .map((itemJson) => _medicationFromJson(itemJson as Map<String, dynamic>))
+          .toList();
+    } else if (json.containsKey('medicationName')) {
+      // Old flat format - create single medication from flat fields
+      medications = [
+        Medication(
+          name: json['medicationName'] as String? ?? '',
+          dosage: json['dosage'] as String? ?? '',
+          frequency: json['frequency'] as String? ?? '',
+          notes: json['instructions'] as String?,
+          cost: 0.0,  // Not in old format
+          isValid: true,
+        )
+      ];
+    } else {
+      medications = [];
+    }
+    
+    final String? issueDateStr = json['issueDate'] as String? ?? 
+                                  json['prescriptionDate'] as String?;
+    
     return Prescription(
-      id: json['id'],
-      patientId: json['patientId'],
-      doctorId: json['doctorId'],
-      issueDate: DateTime.parse(json['issueDate']),
-      diagnosis: json['diagnosis'],
-      items: (json['items'] as List)
-          .map((itemJson) => _medicationFromJson(itemJson))
-          .toList(),
-      totalCost: (json['totalCost'] as num).toDouble(),
-      instructions: json['instructions'],
+      id: json['id'] as String? ?? '',
+      patientId: json['patientId'] as String? ?? '',
+      doctorId: json['doctorId'] as String? ?? '',
+      issueDate: issueDateStr != null 
+          ? DateTime.parse(issueDateStr)
+          : DateTime.now(),
+      diagnosis: json['diagnosis'] as String? ?? '',
+      items: medications,
+      totalCost: (json['totalCost'] as num?)?.toDouble() ?? 
+                 medications.fold(0.0, (sum, med) => sum + med.cost),
+      instructions: json['instructions'] as String? ?? '',
       followUpDate: json['followUpDate'] != null
-          ? DateTime.parse(json['followUpDate'])
+          ? DateTime.parse(json['followUpDate'] as String)
           : null,
-      notes: json['notes'],
+      notes: json['notes'] as String?,
     );
   }
 

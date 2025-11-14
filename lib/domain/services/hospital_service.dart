@@ -4,6 +4,7 @@ import '../entities/room.dart';
 import '../entities/appointment.dart';
 import '../entities/prescription.dart';
 import '../repositories/interfaces.dart';
+import '../../data/repositories/appointment_repository.dart';
 
 class HospitalService {
   final IStaffRepository _staffRepository;
@@ -189,6 +190,19 @@ class HospitalService {
     return await _appointmentRepository.getAppointmentsByDoctor(doctorId);
   }
 
+  Future<List<Appointment>> getAppointmentsByPatient(String patientId) async {
+    return await _appointmentRepository.getAppointmentsByPatient(patientId);
+  }
+
+  Future<List<Appointment>> getAllAppointments() async {
+    // Cast to concrete type to access getAllAppointments method
+    if (_appointmentRepository is AppointmentRepository) {
+      return await (_appointmentRepository as AppointmentRepository).getAllAppointments();
+    }
+    // Fallback to upcoming if using interface
+    return await _appointmentRepository.getUpcomingAppointments();
+  }
+
   // Prescription Management
   Future<Prescription> createPrescription({
     required String patientId,
@@ -239,6 +253,10 @@ class HospitalService {
 
   Future<List<Prescription>> getActivePrescriptions(String patientId) async {
     return await _prescriptionRepository.getActivePrescriptions(patientId);
+  }
+
+  Future<List<Prescription>> getPrescriptionsByDoctor(String doctorId) async {
+    return await _prescriptionRepository.getPrescriptionsByDoctor(doctorId);
   }
 
   // Business Intelligence and Reports
